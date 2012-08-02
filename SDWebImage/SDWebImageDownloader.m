@@ -223,16 +223,17 @@ NSString *const SDWebImageDownloadStopNotification = @"SDWebImageDownloadStopNot
     self.connection = nil;
 
     [[NSNotificationCenter defaultCenter] postNotificationName:SDWebImageDownloadStopNotification object:nil];
+    if (delegate == nil) {
+        if ([delegate respondsToSelector:@selector(imageDownloaderDidFinish:)])
+        {
+            [delegate performSelector:@selector(imageDownloaderDidFinish:) withObject:self];
+        }
 
-    if ([delegate respondsToSelector:@selector(imageDownloaderDidFinish:)])
-    {
-        [delegate performSelector:@selector(imageDownloaderDidFinish:) withObject:self];
-    }
-
-    if ([delegate respondsToSelector:@selector(imageDownloader:didFinishWithImage:)])
-    {
-        UIImage *image = SDScaledImageForPath(url.absoluteString, imageData);
-        [[SDWebImageDecoder sharedImageDecoder] decodeImage:image withDelegate:self userInfo:nil];
+        if ([delegate respondsToSelector:@selector(imageDownloader:didFinishWithImage:)])
+        {
+            UIImage *image = SDScaledImageForPath(url.absoluteString, imageData);
+            [[SDWebImageDecoder sharedImageDecoder] decodeImage:image withDelegate:self userInfo:nil];
+        }
     }
 }
 
